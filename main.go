@@ -28,5 +28,5 @@ func main() {
 	users := strings.Split(user, ",")
 	fmt.Printf("Searching for user(s): %s\n", users)
 
-	fmt.Printf("%s", GetUser(user))
+	fmt.Printf("%s", GetUser(user).Name)
 }

@@ -1,33 +1,45 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 )
 
-const base = "https://api.github.com/users"
+const (
+	base          = "https://api.github.com"
+	pathSeperator = "/"
+)
 
-func GetUser(user string) []byte {
-	url := []string{base, user}
+type User struct {
+	Login     string `json:"login"`
+	Id        int    `json:"id"`
+	Name      string `json:"name"`
+	Company   string `json:"company"`
+	Followers int    `json:"followers"`
+	Following int    `json:"following"`
+	Location  string `json:"location"`
+}
 
-	fmt.Println(strings.Join(url, "/"))
-	response, err := http.Get(strings.Join(url, "/"))
+// Gets the given users profile info from GitHub
+func GetUser(user string) User {
+	url := []string{base, "users", user}
+
+	fmt.Println(strings.Join(url, pathSeperator))
+	response, err := http.Get(strings.Join(url, pathSeperator))
 
 	if err != nil {
-		fmt.Printf("")
 		panic(err)
 	}
 
 	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
 
-	if err != nil {
-		fmt.Printf("")
-		os.Exit(1)
+	var u User
+	e := json.NewDecoder(response.Body).Decode(&u)
+
+	if e != nil {
+		panic(e)
 	}
-
-	return body
+	return u
 }
